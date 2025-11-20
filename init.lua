@@ -1,6 +1,7 @@
 -- Author: Niko
 -- Single-file Neovim configuration.
--- Focus: Go, Python, Bash, Lua, TOML, YAML, C (Kernel/UEFI).
+-- Focus: Real-time UI, Go, Python, Bash, Lua, C/Kernel.
+-- Font: Designed for DaddyTimeMono (Handwritten style).
 -- Theme: Vibrant Google Pastel on Dark.
 
 ----------------------------------------------------------------------
@@ -10,8 +11,22 @@ vim.g.mapleader = " "
 vim.g.maplocalleader = ","
 
 local opt = vim.opt
+
+-- UI Responsiveness
+opt.updatetime = 250
+opt.timeoutlen = 300
+opt.autoread = true
+
+-- Visuals (Tuned for Handwritten Fonts)
 opt.number = true
 opt.relativenumber = true
+opt.signcolumn = "yes"
+opt.termguicolors = true
+opt.cursorline = true
+opt.list = true
+opt.listchars = { tab = "» ", trail = "·", nbsp = " " } -- Cleaned up nbsp for mono font clarity
+
+-- Editing
 opt.mouse = "a"
 opt.ignorecase = true
 opt.smartcase = true
@@ -25,17 +40,10 @@ opt.softtabstop = 4
 opt.expandtab = true
 opt.scrolloff = 8
 opt.sidescrolloff = 8
-opt.signcolumn = "yes"
-opt.termguicolors = true
 opt.completeopt = { "menu", "menuone", "noselect" }
 opt.undofile = true
-opt.updatetime = 250
-opt.timeoutlen = 300
 opt.splitright = true
 opt.splitbelow = true
-opt.list = true
-opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
-opt.cursorline = true
 
 ----------------------------------------------------------------------
 -- 2. Lazy.nvim Bootstrap
@@ -103,7 +111,7 @@ map("n", "<C-l>", "<C-w>l", { silent = true })
 ----------------------------------------------------------------------
 require("lazy").setup({
 
-    -- Lua Library for Neovim
+    -- Lua Library
     { "folke/lazydev.nvim", ft = "lua", opts = {} },
 
     -- Key helpers
@@ -157,9 +165,34 @@ require("lazy").setup({
         opts = {
             disable_netrw = true,
             hijack_netrw = true,
-            view = { width = 30 },
-            git = { ignore = false },
-            renderer = { group_empty = true, icons = { show = { git = true } } },
+            sync_root_with_cwd = true,
+            view = {
+                width = 30,
+                side = "left",
+                preserve_window_proportions = true,
+            },
+            renderer = {
+                group_empty = true,
+                highlight_git = true,
+                highlight_diagnostics = true,
+                indent_markers = { enable = true },
+                icons = {
+                    show = { git = true, folder = true, file = true, diagnostics = true },
+                    glyphs = {
+                        git = {
+                            unstaged = "✗", staged = "✓", unmerged = "",
+                            renamed = "➜", untracked = "★", deleted = "", ignored = "◌",
+                        },
+                    },
+                },
+            },
+            diagnostics = {
+                enable = true,
+                show_on_dirs = true,
+                icons = { hint = "", info = "", warning = "", error = "" },
+            },
+            git = { enable = true, timeout = 400 },
+            filesystem_watchers = { enable = true, debounce_delay = 50 },
         },
     },
 
@@ -177,18 +210,17 @@ require("lazy").setup({
         "folke/tokyonight.nvim",
         priority = 1000,
         config = function()
-            -- Google Brand Colors -> Pastel-ified for Dark Mode
             local G = {
-                blue    = "#8AB4F8", -- Google Blue Light
-                red     = "#F28B82", -- Google Red Light
-                yellow  = "#FDD663", -- Google Yellow Light
-                green   = "#81C995", -- Google Green Light
-                bg      = "#131519", -- Deep Matte Dark
+                blue    = "#8AB4F8",
+                red     = "#F28B82",
+                yellow  = "#FDD663",
+                green   = "#81C995",
+                bg      = "#131519",
                 bg_alt  = "#1B1E23",
                 fg      = "#E8EAED",
                 comment = "#757C85",
-                magenta = "#FF7EB6", -- Vibrant accent
-                cyan    = "#78D9EA", -- Vibrant accent
+                magenta = "#FF7EB6",
+                cyan    = "#78D9EA",
             }
 
             require("tokyonight").setup({
@@ -199,7 +231,6 @@ require("lazy").setup({
                     comments = { italic = true },
                     keywords = { italic = true },
                     functions = { bold = true },
-                    variables = {},
                 },
                 on_colors = function(c)
                     c.bg = G.bg
@@ -208,27 +239,17 @@ require("lazy").setup({
                     c.bg_sidebar = G.bg_alt
                     c.fg = G.fg
                     c.fg_dark = G.comment
-                    
-                    -- Mapping Google Palette
-                    c.blue = G.blue
-                    c.cyan = G.cyan
-                    c.green = G.green
-                    c.orange = G.yellow -- Mapping yellow to orange slot for vibrancy
-                    c.magenta = G.magenta
-                    c.red = G.red
-                    c.teal = G.cyan
-                    c.yellow = G.yellow
+                    c.blue, c.cyan, c.green = G.blue, G.cyan, G.green
+                    c.orange, c.magenta, c.red = G.yellow, G.magenta, G.red
+                    c.teal, c.yellow = G.cyan, G.yellow
                 end,
                 on_highlights = function(hl, c)
-                    -- UI Overrides
                     hl.LineNr = { fg = G.comment }
                     hl.CursorLineNr = { fg = G.blue, bold = true }
                     hl.CursorLine = { bg = "#20242A" }
-                    hl.Visual = { bg = "#3C4043" } -- Google Grey 700
+                    hl.Visual = { bg = "#3C4043" }
                     hl.Search = { fg = G.bg, bg = G.yellow, bold = true }
                     hl.IncSearch = { fg = G.bg, bg = G.blue, bold = true }
-                    
-                    -- Syntax Overrides (Vibrant)
                     hl.Comment = { fg = G.comment, italic = true }
                     hl.Keyword = { fg = G.blue, italic = true }
                     hl.Function = { fg = G.green, bold = true }
@@ -238,16 +259,12 @@ require("lazy").setup({
                     hl.Type = { fg = G.cyan }
                     hl.Identifier = { fg = G.fg }
                     hl.Constant = { fg = G.magenta }
-                    
-                    -- Rainbow Delimiters Matching
                     hl.RainbowDelimiterBlue = { fg = G.blue }
                     hl.RainbowDelimiterRed = { fg = G.red }
                     hl.RainbowDelimiterYellow = { fg = G.yellow }
                     hl.RainbowDelimiterGreen = { fg = G.green }
                     hl.RainbowDelimiterViolet = { fg = G.magenta }
                     hl.RainbowDelimiterCyan = { fg = G.cyan }
-                    
-                    -- Git Signs
                     hl.GitSignsAdd = { fg = G.green }
                     hl.GitSignsChange = { fg = G.blue }
                     hl.GitSignsDelete = { fg = G.red }
@@ -257,7 +274,7 @@ require("lazy").setup({
         end,
     },
 
-    -- Statusline (Lualine)
+    -- Statusline
     {
         "nvim-lualine/lualine.nvim",
         dependencies = "echasnovski/mini.icons",
@@ -286,7 +303,10 @@ require("lazy").setup({
     },
 
     -- Git Signs
-    { "lewis6991/gitsigns.nvim", opts = {} },
+    {
+        "lewis6991/gitsigns.nvim",
+        opts = { update_debounce = 100, current_line_blame = false },
+    },
 
     -- Utils
     { "numToStr/Comment.nvim", opts = {} },
@@ -295,7 +315,7 @@ require("lazy").setup({
     { "OXY2DEV/markview.nvim", ft = "markdown", opts = {} },
 
     ------------------------------------------------------------------
-    -- LSP / Formatting / Linting
+    -- LSP / Formatting / Linting (Native Nvim 0.11+)
     ------------------------------------------------------------------
     {
         "neovim/nvim-lspconfig",
@@ -306,57 +326,36 @@ require("lazy").setup({
         },
         config = function()
             require("mason").setup({ ui = { border = "rounded" } })
-            
-            -- Relevant servers for your stack
             local servers = { "gopls", "pyright", "bashls", "lua_ls", "yamlls", "taplo" }
-            
-            require("mason-lspconfig").setup({
-                ensure_installed = servers,
-                automatic_enable = true,
-            })
+            require("mason-lspconfig").setup({ ensure_installed = servers, automatic_enable = true })
 
             local caps = require("cmp_nvim_lsp").default_capabilities()
-            local lspconfig = require("lspconfig")
-
-            -- General setup
-            for _, server in ipairs(servers) do
-                if server ~= "lua_ls" and server ~= "gopls" then
-                    lspconfig[server].setup({ capabilities = caps })
-                end
+            local function setup(name, config)
+                config = config or {}
+                config.capabilities = vim.tbl_deep_extend("force", {}, caps, config.capabilities or {})
+                vim.lsp.config[name] = vim.tbl_deep_extend("force", vim.lsp.config[name] or {}, config)
+                vim.lsp.enable(name)
             end
 
-            -- Lua specific
-            lspconfig.lua_ls.setup({
-                capabilities = caps,
-                settings = { Lua = { diagnostics = { globals = { "vim" } } } },
-            })
-
-            -- Go specific
-            lspconfig.gopls.setup({
-                capabilities = caps,
+            setup("gopls", {
                 settings = {
                     gopls = {
-                        usePlaceholders = true,
-                        completeUnimported = true,
-                        staticcheck = true,
-                        analyses = { unusedparams = true },
+                        usePlaceholders = true, completeUnimported = true,
+                        staticcheck = true, analyses = { unusedparams = true },
                     },
                 },
             })
+            setup("lua_ls", { settings = { Lua = { diagnostics = { globals = { "vim" } } } } })
+            setup("clangd", { cmd = { "clangd", "--background-index", "--clang-tidy" } })
+            for _, srv in ipairs({ "pyright", "bashls", "yamlls", "taplo" }) do setup(srv, {}) end
 
-            -- Kernel/C specific (Manual setup, assuming system clangd or added manually)
-            lspconfig.clangd.setup({
-                capabilities = caps,
-                cmd = { "clangd", "--background-index", "--clang-tidy" }
-            })
-
-            -- Keymaps
             vim.api.nvim_create_autocmd("LspAttach", {
-                group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+                group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
                 callback = function(ev)
                     local opts = { buffer = ev.buf, silent = true }
                     local m = vim.keymap.set
                     m("n", "gd", vim.lsp.buf.definition, opts)
+                    m("n", "gD", vim.lsp.buf.declaration, opts)
                     m("n", "K", vim.lsp.buf.hover, opts)
                     m("n", "<leader>rn", vim.lsp.buf.rename, opts)
                     m({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
@@ -366,37 +365,29 @@ require("lazy").setup({
         end,
     },
 
-    -- Formatting (Conform)
+    -- Formatting
     {
         "stevearc/conform.nvim",
         event = "BufWritePre",
         opts = {
             format_on_save = { timeout_ms = 500, lsp_fallback = true },
             formatters_by_ft = {
-                lua = { "stylua" },
-                python = { "isort", "black" },
-                go = { "gofumpt", "goimports" },
-                bash = { "shfmt" },
-                yaml = { "prettier" }, -- Prettier is good for YAML/Markdown
-                json = { "prettier" },
-                toml = { "taplo" },
+                lua = { "stylua" }, python = { "isort", "black" },
+                go = { "gofumpt", "goimports" }, bash = { "shfmt" },
+                yaml = { "prettier" }, json = { "prettier" }, toml = { "taplo" },
             },
         },
     },
 
-    -- Linting (nvim-lint)
+    -- Linting
     {
         "mfussenegger/nvim-lint",
         event = { "BufWritePost" },
         config = function()
             local lint = require("lint")
-            
-            -- Custom Kernel Checkpatch
             lint.linters.checkpatch = {
-                cmd = "checkpatch.pl",
-                args = { "--no-tree", "--file", "-" },
-                stdin = true,
-                ignore_exitcode = true,
+                cmd = "checkpatch.pl", args = { "--no-tree", "--file", "-" },
+                stdin = true, ignore_exitcode = true,
                 parser = function(out)
                     local diags = {}
                     for _, line in ipairs(vim.split(out, "\n", { plain = true })) do
@@ -404,28 +395,16 @@ require("lazy").setup({
                         if #m > 0 then
                             local sev = (m[3] == "ERROR" and vim.diagnostic.severity.ERROR) or vim.diagnostic.severity.WARN
                             table.insert(diags, {
-                                lnum = tonumber(m[2]) - 1,
-                                col = 0,
-                                severity = sev,
-                                message = m[4],
-                                source = "checkpatch",
+                                lnum = tonumber(m[2]) - 1, col = 0,
+                                severity = sev, message = m[4], source = "checkpatch",
                             })
                         end
                     end
                     return diags
                 end,
             }
-
-            lint.linters_by_ft = {
-                python = { "pylint" },
-                bash = { "shellcheck" },
-                go = { "golangcilint" },
-                c = { "checkpatch" },
-            }
-
-            vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-                callback = function() lint.try_lint() end,
-            })
+            lint.linters_by_ft = { python = { "pylint" }, bash = { "shellcheck" }, go = { "golangcilint" }, c = { "checkpatch" } }
+            vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, { callback = function() lint.try_lint() end })
         end,
     },
 
@@ -433,35 +412,23 @@ require("lazy").setup({
     {
         "hrsh7th/nvim-cmp",
         event = "InsertEnter",
-        dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "L3MON4D3/LuaSnip",
-            "saadparwaiz1/cmp_luasnip",
-            "onsails/lspkind.nvim",
-        },
+        dependencies = { "hrsh7th/cmp-nvim-lsp", "L3MON4D3/LuaSnip", "saadparwaiz1/cmp_luasnip", "onsails/lspkind.nvim" },
         config = function()
             local cmp = require("cmp")
             local luasnip = require("luasnip")
             cmp.setup({
                 snippet = { expand = function(args) luasnip.lsp_expand(args.body) end },
                 mapping = cmp.mapping.preset.insert({
-                    ["<C-b>"] = cmp.mapping.scroll_docs(-4),
-                    ["<C-f>"] = cmp.mapping.scroll_docs(4),
-                    ["<C-Space>"] = cmp.mapping.complete(),
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                    ["<C-b>"] = cmp.mapping.scroll_docs(-4), ["<C-f>"] = cmp.mapping.scroll_docs(4),
+                    ["<C-Space>"] = cmp.mapping.complete(), ["<CR>"] = cmp.mapping.confirm({ select = true }),
                     ["<Tab>"] = cmp.mapping(function(fallback)
                         if cmp.visible() then cmp.select_next_item()
                         elseif luasnip.expand_or_jumpable() then luasnip.expand_or_jump()
                         else fallback() end
                     end, { "i", "s" }),
                 }),
-                sources = cmp.config.sources({
-                    { name = "nvim_lsp" },
-                    { name = "luasnip" },
-                }),
-                formatting = {
-                    format = require("lspkind").cmp_format({ mode = "symbol", maxwidth = 50 })
-                },
+                sources = cmp.config.sources({ { name = "nvim_lsp" }, { name = "luasnip" } }),
+                formatting = { format = require("lspkind").cmp_format({ mode = "symbol", maxwidth = 50 }) },
             })
         end,
     },
@@ -475,7 +442,7 @@ require("lazy").setup({
         ft = {"go", 'gomod'},
     },
     
-    -- Debugging (DAP)
+    -- Debugging
     {
         "mfussenegger/nvim-dap",
         dependencies = { "rcarriga/nvim-dap-ui", "nvim-neotest/nvim-nio" },
@@ -485,8 +452,6 @@ require("lazy").setup({
             dap.listeners.after.event_initialized["dapui"] = function() dapui.open() end
             dap.listeners.before.event_terminated["dapui"] = function() dapui.close() end
             dap.listeners.before.event_exited["dapui"] = function() dapui.close() end
-            
-            -- Go Debugging
             require("dap-go").setup()
         end,
     },
