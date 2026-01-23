@@ -17,7 +17,16 @@ vim.opt.rtp:prepend(lazypath)
 require("lazy").setup({
 	spec = {
 		-- 1. Load LazyVim Core
-		{ "LazyVim/LazyVim", import = "lazyvim.plugins" },
+		{
+			"LazyVim/LazyVim",
+			import = "lazyvim.plugins",
+			opts = {
+				icons = {
+					-- If you want to customize icons, you can do it here.
+					-- LazyVim uses mini.icons by default if available.
+				},
+			},
+		},
 
 		-- 2. Import Extras
 

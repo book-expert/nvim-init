@@ -79,4 +79,20 @@ return {
 			hide_target_hack = true,
 		},
 	},
+
+	-----------------------------------------------------------------------------
+	-- 6. ICONS: Ensure Nerd Font Icons are Used
+	-----------------------------------------------------------------------------
+	{
+		"echasnovski/mini.icons",
+		opts = {
+			style = "nerd",
+		},
+	},
+	{
+		"nvim-tree/nvim-web-devicons",
+		opts = {
+			default = true,
+		},
+	},
 }
