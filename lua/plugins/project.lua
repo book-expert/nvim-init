@@ -84,7 +84,7 @@ return {
 	-- 6. ICONS: Ensure Nerd Font Icons are Used
 	-----------------------------------------------------------------------------
 	{
-		"echasnovski/mini.icons",
+		"nvim-mini/mini.icons",
 		opts = {
 			style = "nerd",
 		},
