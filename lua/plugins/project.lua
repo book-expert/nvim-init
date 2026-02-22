@@ -1,30 +1,17 @@
 return {
-	-----------------------------------------------------------------------------
-	-- 1. MASON: Ensure Tools are Installed
-	-- Defines tools that don't have automatic Extras (like Bash or Lua setup).
-	-----------------------------------------------------------------------------
 	{
 		"mason-org/mason.nvim",
 		opts = {
 			ensure_installed = {
-				-- Lua (Fixes exit code 127)
 				"lua-language-server",
 				"stylua",
-
-				-- Bash / Shell
 				"bash-language-server",
 				"shellcheck",
 				"shfmt",
-
-				-- C/C++ (Optional)
 				"clang-format",
 			},
 		},
 	},
-
-	-----------------------------------------------------------------------------
-	-- 2. TREESITTER: Syntax Highlighting
-	-----------------------------------------------------------------------------
 	{
 		"nvim-treesitter/nvim-treesitter",
 		opts = {
@@ -40,10 +27,6 @@ return {
 			},
 		},
 	},
-
-	-----------------------------------------------------------------------------
-	-- 3. RECIPE: Clangd Offset Encoding
-	-----------------------------------------------------------------------------
 	{
 		"neovim/nvim-lspconfig",
 		opts = {
@@ -54,10 +37,6 @@ return {
 			},
 		},
 	},
-
-	-----------------------------------------------------------------------------
-	-- 4. CONFIG: Refactoring.nvim
-	-----------------------------------------------------------------------------
 	{
 		"ThePrimeagen/refactoring.nvim",
 		dependencies = {
@@ -68,10 +47,6 @@ return {
 			require("refactoring").setup({})
 		end,
 	},
-
-	-----------------------------------------------------------------------------
-	-- 5. EXTRA CONFIG: Smear Cursor
-	-----------------------------------------------------------------------------
 	{
 		"sphamba/smear-cursor.nvim",
 		opts = {
@@ -79,10 +54,6 @@ return {
 			hide_target_hack = true,
 		},
 	},
-
-	-----------------------------------------------------------------------------
-	-- 6. ICONS: Ensure Nerd Font Icons are Used
-	-----------------------------------------------------------------------------
 	{
 		"nvim-mini/mini.icons",
 		opts = {
@@ -93,6 +64,15 @@ return {
 		"nvim-tree/nvim-web-devicons",
 		opts = {
 			default = true,
+		},
+	},
+	{
+		"mfussenegger/nvim-lint",
+		opts = {
+			linters_by_ft = {
+				c = { "coccinelle", "infer" },
+				cpp = { "coccinelle", "infer" },
+			},
 		},
 	},
 }

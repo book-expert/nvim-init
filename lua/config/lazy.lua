@@ -16,56 +16,34 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 	spec = {
-		-- 1. Load LazyVim Core
 		{
 			"LazyVim/LazyVim",
 			import = "lazyvim.plugins",
-			opts = {
-				icons = {
-					-- If you want to customize icons, you can do it here.
-					-- LazyVim uses mini.icons by default if available.
-				},
-			},
+			opts = {},
 		},
-
-		-- 2. Import Extras
-
-		-- Coding
 		{ import = "lazyvim.plugins.extras.coding.yanky" },
 		{ import = "lazyvim.plugins.extras.coding.mini-surround" },
-		-- REMOVED: mini-snippets (conflicts with luasnip)
 		{ import = "lazyvim.plugins.extras.coding.luasnip" },
-
-		-- Editor
 		{ import = "lazyvim.plugins.extras.editor.mini-move" },
 		{ import = "lazyvim.plugins.extras.editor.refactoring" },
 		{ import = "lazyvim.plugins.extras.editor.illuminate" },
-
-		-- Languages
 		{ import = "lazyvim.plugins.extras.lang.go" },
 		{ import = "lazyvim.plugins.extras.lang.python" },
 		{ import = "lazyvim.plugins.extras.lang.clangd" },
-
-		-- UI & Animation
+		{ import = "lazyvim.plugins.extras.lang.zig" },
 		{ import = "lazyvim.plugins.extras.ui.mini-animate" },
 		{ import = "lazyvim.plugins.extras.ui.smear-cursor" },
-
-		-- Utilities
 		{ import = "lazyvim.plugins.extras.util.chezmoi" },
 		{ import = "lazyvim.plugins.extras.util.rest" },
-
-		-- LSP & Formatting
 		{ import = "lazyvim.plugins.extras.lsp.neoconf" },
 		{ import = "lazyvim.plugins.extras.formatting.black" },
-
-		-- 3. Import your custom plugins
 		{ import = "plugins" },
 	},
 	defaults = {
 		lazy = false,
 		version = false,
 	},
-	install = { colorscheme = { "tokyonight", "habamax" } },
+	install = { colorscheme = { "nord", "habamax" } },
 	checker = { enabled = true },
 	performance = {
 		rtp = {
